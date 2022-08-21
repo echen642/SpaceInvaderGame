@@ -1,12 +1,14 @@
 import pygame
+import sys
 import random
 import math
 from pygame import mixer
 import os
 
+
 class Game:
     def __init__(self):
-        pygame.init() # Initializing pygame
+        pygame.init()  # Initializing pygame
         os.chdir("C:\\Users\\Eddie\\GitHub\\SpaceInvaderGame\\SpaceInvader")
 
         self.running = True
@@ -60,24 +62,19 @@ class Game:
             self.alienX_change.append(0.3)
             self.alienY_change.append(40)
 
-
     def drawScore(self, x, y):
         scoreText = self.font.render("Score: " + str(self.score), True, (255, 255, 255))
         self.screen.blit(scoreText, (x, y))
 
-
     def drawPlayer(self, x, y):
         self.screen.blit(self.playerImg, (x, y))
-
 
     def drawAlien(self, x, y, i):
         self.screen.blit(self.alienImgs[i], (x, y))
 
-
     def drawBullet(self, x, y):
         self.bulletReady = False
         self.screen.blit(self.bulletImg, (x + 16, y + 10))
-
 
     def isCollision(self, x1, x2, y1, y2):
         distance = math.sqrt((math.pow(x2 - x1, 2)) + (math.pow(y2 - y1, 2)))
@@ -86,14 +83,12 @@ class Game:
         else:
             return False
 
-
     def isButtonCollision(self, x1, x2, y1, y2):
         distance = math.sqrt((math.pow(x2 - x1, 2)) + (math.pow(y2 - y1, 2)))
         if distance < 60:
             return True
         else:
             return False
-
 
     def gameOverScreen(self):
         gameOverText = self.gameOverFont.render("GAME OVER", True, (255, 255, 255))
@@ -108,10 +103,15 @@ class Game:
         self.screen.blit(quitText, (450, 335))
 
         quitCollision = self.isButtonCollision(self.bulletX, 450, self.bulletY, 335)
-        # retryCollision = isButtonCollision(bulletX, 268, bulletY, 335)
+        retryCollision = self.isButtonCollision(self.bulletX, 268, self.bulletY, 335)
 
         if quitCollision:
-            self.running = False
+            pygame.quit()
+            sys.exit()
+
+        if retryCollision:
+            newGame = Game()
+            newGame.run()
 
     def run(self):
         # Implement the game loop
@@ -148,7 +148,7 @@ class Game:
 
             for i in range(self.numAliens):
 
-                if self.alienY[i] >= 200:
+                if self.alienY[i] > 480:
                     for j in range(self.numAliens):
                         self.alienY[j] = 2000
                     self.gameOverScreen()
@@ -186,6 +186,7 @@ class Game:
             self.drawScore(10, 10)
 
             pygame.display.update()
+
 
 if __name__ == "__main__":
     game = Game()
