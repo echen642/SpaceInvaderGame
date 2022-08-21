@@ -75,8 +75,7 @@ class Game:
 
 
     def drawBullet(self, x, y):
-        global bulletReady
-        bulletReady = False
+        self.bulletReady = False
         self.screen.blit(self.bulletImg, (x + 16, y + 10))
 
 
