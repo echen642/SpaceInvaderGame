@@ -2,186 +2,192 @@ import pygame
 import random
 import math
 from pygame import mixer
+import os
 
-# Initializing pygame
-pygame.init()
+class Game:
+    def __init__(self):
+        pygame.init() # Initializing pygame
+        os.chdir("C:\\Users\\Eddie\\GitHub\\SpaceInvaderGame\\SpaceInvader")
 
-# Creating game window
-screen = pygame.display.set_mode((800, 600))
+        self.running = True
 
-# Background Image
-background = pygame.image.load("background.jpg")
+        # Score
+        self.score = 0
+        self.font = pygame.font.SysFont("Arial", 30)
 
-# Title and Icon
-pygame.display.set_caption("Space Invaders")
-icon = pygame.image.load("001-spaceship.png")
-pygame.display.set_icon(icon)
+        # Game Over Font and Button
+        self.gameOverFont = pygame.font.Font("freesansbold.ttf", 64)
+        self.restartButton = pygame.Rect(250, 325, 120, 60)
+        self.quitButton = pygame.Rect(425, 325, 120, 60)
 
-# Player Icon
-playerImg = pygame.image.load("player.png")
-playerX = 370
-playerY = 480
-playerX_change = 0
+        # Creating game window
+        self.screen = pygame.display.set_mode((800, 600))
 
-# Bullet Icon
-bulletImg = pygame.image.load("bullet.png")
-bulletX = 0
-bulletY = 480
-bulletY_change = 0.5
-bulletReady = True
+        # Background Image
+        self.background = pygame.image.load("background.jpg")
 
-# Alien Icon
-alienImgs = []
-alienX = []
-alienY = []
-alienX_change = []
-alienY_change = []
-numAliens = 10
+        # Title and Icon
+        pygame.display.set_caption("Space Invaders")
+        icon = pygame.image.load("001-spaceship.png")
+        pygame.display.set_icon(icon)
 
-# Generating Aliens to fight
-for i in range(numAliens):
-    alienImgs.append(pygame.image.load("alien1.png"))
-    alienX.append(random.randint(0, 736))
-    alienY.append(random.randint(50, 150))
-    alienX_change.append(0.3)
-    alienY_change.append(40)
+        # Player Icon
+        self.playerImg = pygame.image.load("player.png")
+        self.playerX = 370
+        self.playerY = 480
+        self.playerX_change = 0
 
-score = 0
-font = pygame.font.SysFont("Arial", 30)
+        # Bullet Icon
+        self.bulletImg = pygame.image.load("bullet.png")
+        self.bulletX = 0
+        self.bulletY = 480
+        self.bulletY_change = 0.5
+        self.bulletReady = True
 
-# Game Over Font and Button
-gameOverFont = pygame.font.Font("freesansbold.ttf", 64)
-restartButton = pygame.Rect(250, 325, 120, 60)
-quitButton = pygame.Rect(425, 325, 120, 60)
+        # Alien Icon
+        self.alienImgs = []
+        self.alienX = []
+        self.alienY = []
+        self.alienX_change = []
+        self.alienY_change = []
+        self.numAliens = 10
 
-def drawScore(x, y):
-    scoreText = font.render("Score: " + str(score), True, (255, 255, 255))
-    screen.blit(scoreText, (x, y))
-
-
-def drawPlayer(x, y):
-    screen.blit(playerImg, (x, y))
+        # Generating Aliens to fight
+        for i in range(self.numAliens):
+            self.alienImgs.append(pygame.image.load("alien1.png"))
+            self.alienX.append(random.randint(0, 736))
+            self.alienY.append(random.randint(50, 150))
+            self.alienX_change.append(0.3)
+            self.alienY_change.append(40)
 
 
-def drawAlien(x, y, i):
-    screen.blit(alienImgs[i], (x, y))
+    def drawScore(self, x, y):
+        scoreText = self.font.render("Score: " + str(self.score), True, (255, 255, 255))
+        self.screen.blit(scoreText, (x, y))
 
 
-def drawBullet(x, y):
-    global bulletReady
-    bulletReady = False
-    screen.blit(bulletImg, (x + 16, y + 10))
+    def drawPlayer(self, x, y):
+        self.screen.blit(self.playerImg, (x, y))
 
 
-def isCollision(x1, x2, y1, y2):
-    distance = math.sqrt((math.pow(x2 - x1, 2)) + (math.pow(y2 - y1, 2)))
-    if distance < 27:
-        return True
-    else:
-        return False
-
-def isButtonCollision(x1, x2, y1, y2):
-    distance = math.sqrt((math.pow(x2 - x1, 2)) + (math.pow(y2 - y1, 2)))
-    if distance < 60:
-        return True
-    else:
-        return False
+    def drawAlien(self, x, y, i):
+        self.screen.blit(self.alienImgs[i], (x, y))
 
 
-def gameOverScreen():
-    gameOverText = gameOverFont.render("GAME OVER", True, (255, 255, 255))
-    screen.blit(gameOverText, (200, 250))
-
-    pygame.draw.rect(screen, (255, 255, 255), restartButton, 2)
-    restartText = font.render("Retry?", True, (255, 255, 255))
-    screen.blit(restartText, (268, 335))
-
-    pygame.draw.rect(screen, (255, 255, 255), quitButton, 2)
-    quitText = font.render("Quit?", True, (255, 255, 255))
-    screen.blit(quitText, (450, 335))
-
-    quitCollision = isButtonCollision(bulletX, 450, bulletY, 335)
-    # retryCollision = isButtonCollision(bulletX, 268, bulletY, 335)
-
-    if quitCollision:
-        global running
-        running = False
+    def drawBullet(self, x, y):
+        global bulletReady
+        bulletReady = False
+        self.screen.blit(self.bulletImg, (x + 16, y + 10))
 
 
+    def isCollision(self, x1, x2, y1, y2):
+        distance = math.sqrt((math.pow(x2 - x1, 2)) + (math.pow(y2 - y1, 2)))
+        if distance < 27:
+            return True
+        else:
+            return False
 
-# Game loop
-running = True
+
+    def isButtonCollision(self, x1, x2, y1, y2):
+        distance = math.sqrt((math.pow(x2 - x1, 2)) + (math.pow(y2 - y1, 2)))
+        if distance < 60:
+            return True
+        else:
+            return False
 
 
-# Implement the game loop
-while running:
-    # screen.fill((100, 0, 0))
+    def gameOverScreen(self):
+        gameOverText = self.gameOverFont.render("GAME OVER", True, (255, 255, 255))
+        self.screen.blit(gameOverText, (200, 250))
 
-    screen.blit(background, (0, 0))
+        pygame.draw.rect(self.screen, (255, 255, 255), self.restartButton, 2)
+        restartText = self.font.render("Retry?", True, (255, 255, 255))
+        self.screen.blit(restartText, (268, 335))
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
+        pygame.draw.rect(self.screen, (255, 255, 255), self.quitButton, 2)
+        quitText = self.font.render("Quit?", True, (255, 255, 255))
+        self.screen.blit(quitText, (450, 335))
 
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_a:
-                playerX_change = -0.1
-            if event.key == pygame.K_d:
-                playerX_change = 0.1
-            if event.key == pygame.K_SPACE and bulletReady is True:
-                mixer.Sound("Shooting.wav").play()
-                bulletX = playerX
-                drawBullet(bulletX, bulletY)
+        quitCollision = self.isButtonCollision(self.bulletX, 450, self.bulletY, 335)
+        # retryCollision = isButtonCollision(bulletX, 268, bulletY, 335)
 
-        if event.type == pygame.KEYUP:
-            if event.key == pygame.K_a or event.key == pygame.K_d:
-                playerX_change = 0
+        if quitCollision:
+            self.running = False
 
-    playerX += playerX_change
+    def run(self):
+        # Implement the game loop
+        while self.running:
+            # screen.fill((100, 0, 0))
 
-    # Checking Player Boundaries
-    if playerX >= 736:
-        playerX = 736
-    elif playerX <= 0:
-        playerX = 0
+            self.screen.blit(self.background, (0, 0))
 
-    for i in range(numAliens):
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.running = False
 
-        if alienY[i] >= 200:
-            for j in range(numAliens):
-                alienY[j] = 2000
-            gameOverScreen()
-            break
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_a:
+                        self.playerX_change = -0.1
+                    if event.key == pygame.K_d:
+                        self.playerX_change = 0.1
+                    if event.key == pygame.K_SPACE and self.bulletReady is True:
+                        mixer.Sound("Shooting.wav").play()
+                        self.bulletX = self.playerX
+                        self.drawBullet(self.bulletX, self.bulletY)
 
-        alienX[i] += alienX_change[i]
+                if event.type == pygame.KEYUP:
+                    if event.key == pygame.K_a or event.key == pygame.K_d:
+                        self.playerX_change = 0
 
-        # Checking Alien Boundaries
-        if alienX[i] >= 736 or alienX[i] <= 0:
-            alienX_change[i] = -alienX_change[i]
-            alienY[i] += alienY_change[i]
+            self.playerX += self.playerX_change
 
-        # Collision Detection
-        collision = isCollision(bulletX, alienX[i], bulletY, alienY[i])
-        if collision:
-            explosionSound = mixer.Sound("Explosion.wav")
-            explosionSound.play()
-            bulletY = 480
-            bulletReady = True
-            score += 1
-            alienX[i] = random.randint(0, 736)
-            alienY[i] = random.randint(50, 150)
+            # Checking Player Boundaries
+            if self.playerX >= 736:
+                self.playerX = 736
+            elif self.playerX <= 0:
+                self.playerX = 0
 
-        drawAlien(alienX[i], alienY[i], i)
+            for i in range(self.numAliens):
 
-    # Bullet Movement
-    if bulletReady is False:
-        drawBullet(bulletX, bulletY)
-        bulletY -= bulletY_change
-        if bulletY <= -32:
-            bulletReady = True
-            bulletY = 480
+                if self.alienY[i] >= 200:
+                    for j in range(self.numAliens):
+                        self.alienY[j] = 2000
+                    self.gameOverScreen()
+                    break
 
-    drawPlayer(playerX, playerY)
-    drawScore(10, 10)
+                self.alienX[i] += self.alienX_change[i]
 
-    pygame.display.update()
+                # Checking Alien Boundaries
+                if self.alienX[i] >= 736 or self.alienX[i] <= 0:
+                    self.alienX_change[i] = -self.alienX_change[i]
+                    self.alienY[i] += self.alienY_change[i]
+
+                # Collision Detection
+                collision = self.isCollision(self.bulletX, self.alienX[i], self.bulletY, self.alienY[i])
+                if collision:
+                    explosionSound = mixer.Sound("Explosion.wav")
+                    explosionSound.play()
+                    self.bulletY = 480
+                    self.bulletReady = True
+                    self.score += 1
+                    self.alienX[i] = random.randint(0, 736)
+                    self.alienY[i] = random.randint(50, 150)
+
+                self.drawAlien(self.alienX[i], self.alienY[i], i)
+
+            # Bullet Movement
+            if self.bulletReady is False:
+                self.drawBullet(self.bulletX, self.bulletY)
+                self.bulletY -= self.bulletY_change
+                if self.bulletY <= -32:
+                    self.bulletReady = True
+                    self.bulletY = 480
+
+            self.drawPlayer(self.playerX, self.playerY)
+            self.drawScore(10, 10)
+
+            pygame.display.update()
+
+if __name__ == "__main__":
+    game = Game()
+    game.run()
