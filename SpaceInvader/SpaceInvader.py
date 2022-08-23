@@ -6,6 +6,7 @@ from pygame import mixer
 import os
 
 
+
 class Game:
     def __init__(self):
         pygame.init()  # Initializing pygame
@@ -77,11 +78,12 @@ class Game:
         self.screen.blit(self.bulletImg, (x + 16, y + 10))
 
     def isCollision(self, x1, x2, y1, y2):
-        distance = math.sqrt((math.pow(x2 - x1, 2)) + (math.pow(y2 - y1, 2)))
-        if distance < 27:
-            return True
-        else:
-            return False
+        if self.bulletReady is False:
+            distance = math.sqrt((math.pow(x2 - x1, 2)) + (math.pow(y2 - y1, 2)))
+            if distance < 27:
+                return True
+            else:
+                return False
 
     def isButtonCollision(self, x1, x2, y1, y2):
         distance = math.sqrt((math.pow(x2 - x1, 2)) + (math.pow(y2 - y1, 2)))
@@ -123,6 +125,8 @@ class Game:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
+                    pygame.quit()
+                    sys.exit()
 
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_a:
@@ -146,9 +150,9 @@ class Game:
             elif self.playerX <= 0:
                 self.playerX = 0
 
+            # Checking AlienY Boundaries
             for i in range(self.numAliens):
-
-                if self.alienY[i] > 480:
+                if self.alienY[i] >= 416:
                     for j in range(self.numAliens):
                         self.alienY[j] = 2000
                     self.gameOverScreen()
@@ -156,7 +160,7 @@ class Game:
 
                 self.alienX[i] += self.alienX_change[i]
 
-                # Checking Alien Boundaries
+                # Alien Movement
                 if self.alienX[i] >= 736 or self.alienX[i] <= 0:
                     self.alienX_change[i] = -self.alienX_change[i]
                     self.alienY[i] += self.alienY_change[i]
@@ -180,7 +184,7 @@ class Game:
                 self.bulletY -= self.bulletY_change
                 if self.bulletY <= -32:
                     self.bulletReady = True
-                    self.bulletY = 480
+                    self.bulletY = 470
 
             self.drawPlayer(self.playerX, self.playerY)
             self.drawScore(10, 10)
