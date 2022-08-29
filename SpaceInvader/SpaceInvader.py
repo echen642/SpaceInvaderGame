@@ -5,7 +5,7 @@ import math
 from pygame import mixer
 import os
 
-# Reset the screen after losing one life
+# Fix lives going negative
 
 class Game:
     def __init__(self):
@@ -162,7 +162,10 @@ class Game:
             for i in range(self.numAliens):
                 if self.alienY[i] >= 416:
                     self.playerLives -= 1
-                    if self.playerLives <= 0:
+                    for k in range(self.numAliens):
+                        self.alienX[k] = random.randint(0, 736)
+                        self.alienY[k] = random.randint(50, 150)
+                    if self.playerLives == 0:
                         for j in range(self.numAliens):
                             self.alienY[j] = 2000
                         self.gameOverScreen()
