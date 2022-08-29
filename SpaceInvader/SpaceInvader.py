@@ -5,18 +5,19 @@ import math
 from pygame import mixer
 import os
 
-
+# Reset the screen after losing one life
 
 class Game:
     def __init__(self):
         pygame.init()  # Initializing pygame
-        os.chdir("C:\\Users\\Eddie\\GitHub\\SpaceInvaderGame\\SpaceInvader")
+        os.chdir("C:\\Users\\eddie\\PycharmProjects\\SpaceInvaderGame\\SpaceInvader")
 
         self.running = True
 
         # Score
         self.score = 0
         self.font = pygame.font.SysFont("Arial", 30)
+        self.playerLives = 3
 
         # Game Over Font and Button
         self.gameOverFont = pygame.font.Font("freesansbold.ttf", 64)
@@ -63,9 +64,16 @@ class Game:
             self.alienX_change.append(0.3)
             self.alienY_change.append(40)
 
+    def setLives(self, lives):
+        self.playerLives = lives
+
     def drawScore(self, x, y):
         scoreText = self.font.render("Score: " + str(self.score), True, (255, 255, 255))
         self.screen.blit(scoreText, (x, y))
+
+    def drawLives(self, x, y):
+        livesText = self.font.render("Lives: " + str(self.playerLives), True, (255, 255, 255))
+        self.screen.blit(livesText, (x, y))
 
     def drawPlayer(self, x, y):
         self.screen.blit(self.playerImg, (x, y))
@@ -153,10 +161,12 @@ class Game:
             # Checking AlienY Boundaries
             for i in range(self.numAliens):
                 if self.alienY[i] >= 416:
-                    for j in range(self.numAliens):
-                        self.alienY[j] = 2000
-                    self.gameOverScreen()
-                    break
+                    self.playerLives -= 1
+                    if self.playerLives <= 0:
+                        for j in range(self.numAliens):
+                            self.alienY[j] = 2000
+                        self.gameOverScreen()
+                        break
 
                 self.alienX[i] += self.alienX_change[i]
 
@@ -188,6 +198,7 @@ class Game:
 
             self.drawPlayer(self.playerX, self.playerY)
             self.drawScore(10, 10)
+            self.drawLives(700, 10)
 
             pygame.display.update()
 
